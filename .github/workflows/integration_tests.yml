@@ -11,6 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./
+        with:
+          check-cmd: "cargo fmt --check"
 
   test_error:
     runs-on: ubuntu-latest
