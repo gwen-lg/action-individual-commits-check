@@ -2,7 +2,7 @@ use std::{
     env,
     fs::File,
     io::{self, Write},
-    process::{exit, Command},
+    process::Command,
 };
 
 use thiserror::Error;
@@ -18,6 +18,9 @@ enum Error {
         source: io::Error,
         cmd: String,
     },
+
+    #[error("Running of check-cmd : {cmd} failed.")]
+    CommandExecutionFailed { cmd: String },
 
     #[error("The test error was triggered")]
     TestGhAction,
@@ -53,7 +56,10 @@ fn main() -> anyhow::Result<()> {
             write!(output_file, "No error").unwrap();
         } else {
             output_file.write_all(&output.stderr).unwrap();
-            exit(1);
+            return Err(Error::CommandExecutionFailed {
+                cmd: check_cmd.into(),
+            }
+            .into());
         }
     }
 
