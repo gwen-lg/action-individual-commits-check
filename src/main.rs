@@ -30,9 +30,6 @@ enum Error {
 
     #[error("The process {cmd} did not return any code.")]
     NoReturnCodeProcess { cmd: String },
-
-    #[error("The test error was triggered")]
-    TestGhAction,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -50,11 +47,13 @@ fn main() -> anyhow::Result<()> {
 
     let args: Vec<String> = env::args().collect();
     let check_cmd = &args[1];
-    let error = &args[2];
-
     if check_cmd.is_empty() {
         eprintln!("Error: a `check-cmd` input should be provided!");
-        write!(output_file, "error={error}").unwrap();
+        write!(
+            output_file,
+            "error=Error: a `check-cmd` input should be provided!"
+        )
+        .unwrap();
         return Err(Error::EmptyCheckCmd.into());
     } else {
         //TODO: create
@@ -82,12 +81,6 @@ fn main() -> anyhow::Result<()> {
             }
             .into());
         }
-    }
-
-    if !error.is_empty() {
-        eprintln!("Error: {error}");
-        write!(output_file, "error={error}").unwrap();
-        return Err(Error::TestGhAction.into());
     }
     Ok(())
 }
