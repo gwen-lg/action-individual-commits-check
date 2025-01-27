@@ -1,7 +1,7 @@
 use std::{
     env,
     fs::File,
-    io::Write,
+    io::{self, Write},
     process::{exit, Command},
 };
 
@@ -11,6 +11,13 @@ use thiserror::Error;
 enum Error {
     #[error("The `check-cmd` input is not provided")]
     EmptyCheckCmd,
+
+    #[error("Launch of check-cmd : {cmd} failed.")]
+    CommandLaunchFailed {
+        #[source]
+        source: io::Error,
+        cmd: String,
+    },
 
     #[error("The test error was triggered")]
     TestGhAction,
@@ -35,9 +42,13 @@ fn main() -> anyhow::Result<()> {
     } else {
         //TODO: create
         eprintln!("Execute `check-cmd`: `{}`", check_cmd);
-        let output = Command::new(check_cmd)
-            .output()
-            .expect("Failed to execute `check-cmd`");
+        let output =
+            Command::new(check_cmd)
+                .output()
+                .map_err(|err| Error::CommandLaunchFailed {
+                    source: err,
+                    cmd: check_cmd.into(),
+                })?;
         if output.status.success() {
             write!(output_file, "No error").unwrap();
         } else {
