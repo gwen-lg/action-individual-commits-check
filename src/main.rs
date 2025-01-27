@@ -9,6 +9,11 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 enum Error {
+    #[error(
+        "The env var `GITHUB_EVENT` is missing, setup it in your workflow with 'GITHUB_EVENT'."
+    )]
+    MissingGithubEventEnvVar(#[source] env::VarError),
+
     #[error("The `check-cmd` input is not provided")]
     EmptyCheckCmd,
 
@@ -30,9 +35,14 @@ fn main() -> anyhow::Result<()> {
     let github_output_path = env::var("GITHUB_OUTPUT").unwrap();
     let mut output_file = File::create(github_output_path).expect("Create output file failed");
 
-    let github_event = env::var("GITHUB_EVENT").unwrap();
+    let github_event = env::var("GITHUB_EVENT").map_err(Error::MissingGithubEventEnvVar)?;
     //TODO: if debug
     eprintln!("event={github_event}");
+
+    let github_event_json =
+        env::var("GITHUB_EVENT_JSON").map_err(Error::MissingGithubEventEnvVar)?;
+    //TODO: if debug
+    eprintln!("json_event={github_event_json}");
 
     let args: Vec<String> = env::args().collect();
     let check_cmd = &args[1];

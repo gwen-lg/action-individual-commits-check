@@ -11,6 +11,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./
+        env:
+          GITHUB_EVENT: ${{ github.event }}
+          GITHUB_EVENT_JSON: ${{ toJson(github.event) }}
+        with:
+          check-cmd: "cargo fmt --check"
 
   test_error:
     runs-on: ubuntu-latest
@@ -19,6 +24,9 @@ jobs:
       - id: test
         continue-on-error: true
         uses: ./
+        env:
+          GITHUB_EVENT: ${{ github.event }}
+          GITHUB_EVENT_JSON: ${{ toJson(github.event) }}
         with:
           error: "This is an error"
       - name: Verify failure
