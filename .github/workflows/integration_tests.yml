@@ -14,18 +14,33 @@ jobs:
         with:
           check-cmd: "cargo fmt --check"
 
-  test_error:
+  test_missing_env_var:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - id: test
+      - id: test_missing_envvar
         continue-on-error: true
         uses: ./
         with:
-          error: "This is an error"
+          check-cmd: "cargo fmt --check"
       - name: Verify failure
-        if: steps.test.outputs.error != ''
+        if: steps.test_missing_envvar.outputs.error != ''
         run: echo "Failed as expected"
       - name: Unexpected success
-        if: steps.test.outputs.error == ''
+        if: steps.test_missing_envvar.outputs.error == ''
+        run: echo "Succeeded unexpectedly" && exit 1
+
+
+  test_missing_check-cmd:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: test_missing_check-cmd
+        continue-on-error: true
+        uses: ./
+      - name: Verify failure
+        if: steps.test_missing_check-cmd.outputs.error != ''
+        run: echo "Failed as expected"
+      - name: Unexpected success
+        if: steps.test_missing_check-cmd.outputs.error == ''
         run: echo "Succeeded unexpectedly" && exit 1
