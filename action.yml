@@ -56,6 +56,11 @@ runs:
     - name: Run Action
       shell: bash
       id: run
+      env:
+        GITHUB_EVENT: ${{ github.event }}
+        GITHUB_EVENT_JSON: ${{ toJson(github.event) }}
       run: |
         printenv
+        echo ${{ github.event }} >> $GITHUB_EVENT
+        echo ${{ toJson(github.event) }} >> $GITHUB_EVENT_JSON
         ./${{ runner.os }}/${{ env.binary_name }} "${{ inputs.check-cmd }}"
