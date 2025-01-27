@@ -1,6 +1,8 @@
-use std::env;
-use std::fs::write;
-use std::process::exit;
+use std::{
+    env,
+    fs::{write, File},
+    process::{exit, Command},
+};
 
 fn main() {
     let github_output_path = env::var("GITHUB_OUTPUT").unwrap();
