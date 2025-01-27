@@ -24,6 +24,9 @@ runs:
         echo "action_repo=action-individual-commits-check" >> $GITHUB_ENV
         echo "action_org=gwen-lg" >> $GITHUB_ENV
         echo "binary_name=action-individual-commits-check" >> $GITHUB_ENV
+        echo "GITHUB_EVENT_NAME=${{ github.event_name }} >> $GITHUB_ENV
+        echo "GITHUB_EVENT=${{ github.event }} >> $GITHUB_ENV
+        echo "GITHUB_EVENT_JSON=${{ toJson(github.event) }} >> $GITHUB_ENV
 
     - name: Add binary extension
       shell: bash
