@@ -2,6 +2,10 @@ name: action-individual-commits-check
 description: Allow to check individual commits of a push or pull request
 author: Gwen Lg <me@gwenlg.fr>
 inputs:
+  check-cmd:
+    description: "The Check Command executed on each commit by the action"
+    required: true
+    default: "echo 'No check command profided !'"
   error:
     description: 'The error message to display, if any'
     required: false
@@ -58,4 +62,4 @@ runs:
       id: run
       run: |
         printenv
-        ./${{ runner.os }}/${{ env.binary_name }} "${{ inputs.error }}"
+        ./${{ runner.os }}/${{ env.binary_name }} "${{ inputs.check-cmd }}"
