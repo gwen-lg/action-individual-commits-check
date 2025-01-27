@@ -2,6 +2,10 @@
 
 Allow to check individual commits of a push or pull request.
 
+This action is designed to check each individual commit with user profided check command.
+
+`check-cmd` input should be provided in workflow.
+
 ## TODO
 
 - [ ] Update this README with the details of this action
