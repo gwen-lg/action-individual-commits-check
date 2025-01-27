@@ -11,6 +11,9 @@ use thiserror::Error;
 enum Error {
     #[error("The `check-cmd` input is not provided")]
     EmptyCheckCmd,
+
+    #[error("The test error was triggered")]
+    TestGhAction,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -46,7 +49,7 @@ fn main() -> anyhow::Result<()> {
     if !error.is_empty() {
         eprintln!("Error: {error}");
         write!(output_file, "error={error}").unwrap();
-        exit(1);
+        return Err(Error::TestGhAction.into());
     }
     Ok(())
 }
