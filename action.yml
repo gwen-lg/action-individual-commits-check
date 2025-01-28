@@ -53,4 +53,6 @@ runs:
     - name: Run Action
       shell: bash
       id: run
+      env:
+        GITHUB_EVENT: ${{ toJson(github.event) }}
       run: ./${{ runner.os }}/${{ env.binary_name }} "${{ inputs.error }}"
