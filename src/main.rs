@@ -15,6 +15,9 @@ enum Error {
     )]
     MissingGithubEventEnvVar(#[source] env::VarError),
 
+    #[error("Serde fail to parse `github.event` json")]
+    FailedParseGithubEvent(#[source] serde_json::Error),
+
     #[error("The `check-cmd` input is not provided")]
     EmptyCheckCmd,
 
@@ -33,12 +36,17 @@ enum Error {
 }
 
 fn main() -> anyhow::Result<()> {
+    let debug = false; //TODO: use env var ? ACTIONS_RUNNER_DEBUG
     let github_output_path = env::var("GITHUB_OUTPUT").unwrap();
     let mut output_file = File::create(github_output_path).expect("Create output file failed");
 
     let github_event = env::var("GITHUB_EVENT").map_err(Error::MissingGithubEventEnvVar)?;
-    //TODO: if debug
-    eprintln!("event={github_event}");
+    if debug {
+        eprintln!("event={github_event}");
+    }
+    let event_json: serde_json::Value =
+        serde_json::from_str(&github_event).map_err(Error::FailedParseGithubEvent)?;
+    eprintln!("event={event_json:?}");
 
     let args: Vec<String> = env::args().collect();
     let check_cmd = &args[1];
